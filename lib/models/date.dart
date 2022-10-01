@@ -1,18 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:lark/models/pill.dart';
 
 import '../utils/network.dart';
 
 class DataModel extends ChangeNotifier {
-  Map<String, List<Pill>>? _pills = {};
+  Map<String, List<Pill>> _pills = {};
   DateTime _selectedDate = DateTime(2022, 09, 26);
 
-  List<Pill>? get pill => _pills?[datetimeformatter.format(_selectedDate)];
+  List<Pill>? get datePills => _pills[datetimeformatter.format(_selectedDate)];
 
   Future<Map<String, List<Pill>>?> loadData() async {
-    _pills = (await readPill()).cast<String, List<Pill>>();
+    Map<String, List<Pill>> data =
+        (await readPill()).cast<String, List<Pill>>();
     notifyListeners();
-    return _pills;
+    return data;
   }
 
   set selectedDate(DateTime value) {
@@ -24,14 +27,15 @@ class DataModel extends ChangeNotifier {
 
   DateTime get selectedDate => _selectedDate;
 
-  void add(Pill pill) async {
-    _pills = await writeData(pill);
-    // print(_pills);
+  add(Pill pill) async {
+    Map<String, List<Pill>>? data = await writeData(pill);
+    _pills = (await loadData())!;
+    inspect(_pills);
     notifyListeners();
   }
 
   void removePill(Pill pill) {
-    _pills?[datetimeformatter.format(_selectedDate)]?.remove(pill);
+    _pills[datetimeformatter.format(_selectedDate)]?.remove(pill);
     notifyListeners();
   }
 }

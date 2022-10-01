@@ -1,25 +1,29 @@
+import 'dart:io';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:lark/models/date.dart';
 import 'package:lark/router/routes.dart';
+import 'package:path_provider/path_provider.dart';
 import 'config/themes/theme.dart';
 import 'package:provider/provider.dart';
 
-Future<void> main() async {
-  AwesomeNotifications().initialize(
-    'resource://drawable/res_notification_app_icon',
-    [
-      NotificationChannel(
-        channelKey: 'pill_channel',
-        channelName: 'Pill Reminder',
-        defaultColor: const Color(0xff020202),
-        importance: NotificationImportance.High,
-        channelShowBadge: true,
-        channelDescription: 'Description',
-      ),
-    ],
-  );
+main() async {
   runApp(const MyApp());
+  final dir = (await getApplicationDocumentsDirectory()).path;
+  File('$dir/data.json').writeAsStringSync('');
+  AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+      locked: true,
+      channelKey: 'pill_channel',
+      channelName: 'Pill Reminder',
+      defaultColor: const Color(0xff020202),
+      importance: NotificationImportance.High,
+      channelShowBadge: true,
+      channelDescription: 'Description',
+    ),
+  ]);
+  await AwesomeNotifications().requestPermissionToSendNotifications();
 }
 
 class MyApp extends StatefulWidget {

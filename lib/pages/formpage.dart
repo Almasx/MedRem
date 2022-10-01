@@ -7,6 +7,7 @@ import 'package:lark/utils/stringext.dart';
 import 'package:provider/provider.dart';
 
 import '../models/pill.dart';
+import '../router/routes.dart';
 
 class FormPage extends StatefulWidget {
   FormPage({
@@ -130,28 +131,27 @@ class _FormPageState extends State<FormPage> {
                                             Map.from(
                                                 widget.formState)['evening']
                                           ];
+                                          widget.formState.remove('morning');
+                                          widget.formState.remove('afternoon');
+                                          widget.formState.remove('evening');
+
                                           for (TimeOfDay? time in times) {
                                             if (time == null) {
                                               continue;
                                             }
-                                            widget.formState.keys
-                                                .where((k) =>
-                                                    'morning afternoon evening'
-                                                        .contains(
-                                                            k)) // filter keys
-                                                .toList() // create a copy to avoid concurrent modifications
-                                                .forEach(
-                                                    widget.formState.remove);
                                             Pill pill = Pill.fromJson({
                                               ...widget.formState,
                                               'time': time
                                             });
-                                            Provider.of<DataModel>(context,
+                                            print(pill.toJson());
+                                            await Provider.of<DataModel>(
+                                                    context,
                                                     listen: false)
                                                 .add(pill);
                                           }
-                                          // Navigator.of(context)
-                                          //     .pushNamed(RouteManager.homePage);
+
+                                          await Navigator.of(context)
+                                              .pushNamed(RouteManager.homePage);
                                         }
                                       })
                                 ]),
@@ -236,7 +236,7 @@ class _FormPageState extends State<FormPage> {
           child: TextFieldWidget(
               onSave: (val) {
                 setState(() {
-                  widget.formState['amount'] = int.parse(val);
+                  widget.formState['dosage'] = int.parse(val);
                 });
               },
               inputFormatters: [

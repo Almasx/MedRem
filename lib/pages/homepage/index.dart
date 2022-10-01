@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lark/models/date.dart';
 import 'package:lark/pages/homepage/reminderlist.dart';
 import 'package:lark/router/routes.dart';
 import 'package:lark/widgets/atoms/buttons.dart';
-import 'package:provider/provider.dart';
 
 import 'calendar.dart';
 
@@ -25,9 +23,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: IconButtonWidget(
         color: Theme.of(context).colorScheme.background,
-        onPressed: () {
-          Future.microtask(
-              () => Navigator.of(context).pushNamed(RouteManager.formPage));
+        onPressed: () async {
+          await Navigator.of(context).pushNamed(RouteManager.formPage);
         },
         icon: Icons.add,
       ),
@@ -79,7 +76,7 @@ class TopBar extends SliverPersistentHeaderDelegate {
                       style: TextStyle(fontWeight: FontWeight.w500)),
                 ],
               ),
-            ))
+            )),
       ]),
     );
   }

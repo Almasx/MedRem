@@ -29,17 +29,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.4
+  http: ^0.13.5
   iconsax: ^0.0.8
   provider: ^6.0.3
   sliver_tools: ^0.2.8
   page_transition: "^2.0.9"
-  flutter_svg: ^0.19.3
-  path_provider: ^2.0.9
+  flutter_svg: ^1.1.5
+  path_provider: ^2.0.11
   intl: ^0.17.0
   awesome_notifications: ^0.6.21
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.10.0"
   flutter_test:
     sdk: flutter
 
@@ -48,8 +49,14 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
+  test: ^1.21.1
 
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/icons/icon.png"
+  image_path_android: "assets/icons/icon.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -62,6 +69,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/icons/icon.png
     - assets/images/Background.png
     - assets/images/Pill.png
 

@@ -20,7 +20,7 @@ class ReminderList extends StatefulWidget {
 class _ReminderListState extends State<ReminderList> {
   @override
   Widget build(BuildContext context) {
-    List<Pill>? pills = Provider.of<DataModel>(context, listen: true).pill;
+    List<Pill>? pills = Provider.of<DataModel>(context, listen: true).datePills;
     return SliverStack(
       // defaults to false
       insetOnOverlap: true,
@@ -62,13 +62,13 @@ class _ReminderListState extends State<ReminderList> {
                               child: PillCard(
                                 index: index,
                                 pill: pill,
-                                onTap: () {
-                                  Future.microtask(() => Navigator.of(context)
-                                          .pushNamed(RouteManager.detailsPage,
-                                              arguments: {
-                                            'pill': pill,
-                                            'index': index
-                                          }));
+                                onTap: () async {
+                                  await Navigator.of(context).pushNamed(
+                                      RouteManager.detailsPage,
+                                      arguments: {
+                                        'pill': pill,
+                                        'index': index
+                                      });
                                 },
                               ),
                               onDismissed: (DismissDirection direction) {
@@ -107,7 +107,7 @@ class PillCard extends StatelessWidget {
                   Border.all(color: Theme.of(context).colorScheme.secondary)),
           child: Row(children: [
             Hero(
-              tag: 'image' + index.toString(),
+              tag: 'image$index',
               child: Image.asset(
                 "assets/images/Pill.png",
                 fit: BoxFit.cover,
@@ -120,12 +120,12 @@ class PillCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${pill.title}, 250mg',
+                  '${pill.title}, ${pill.weight}mg',
                   style: const TextStyle(
                       fontWeight: FontWeight.w500, fontSize: 20),
                 ),
                 Text(
-                  '${pill.dosage} pill, once per day',
+                  '${pill.dosage} pill',
                   style: TextStyle(
                       color: Theme.of(context)
                           .colorScheme

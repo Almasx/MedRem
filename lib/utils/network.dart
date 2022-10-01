@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lark/models/pill.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+
+import 'notifications.dart';
 
 var datetimeformatter = DateFormat('yyyy-MMM-dd');
 
@@ -14,33 +17,37 @@ Future<String> getDirPath() async {
 
 Future<Map<String, dynamic>> readPill() async {
   Map<String, dynamic>? data = {};
-  final _dirPath = await getDirPath();
-  if (!File('$_dirPath/data.json').existsSync()) {
-    File('$_dirPath/data.json').createSync(recursive: true);
+  final dirPath = await getDirPath();
+  if (!File('$dirPath/data.json').existsSync()) {
+    File('$dirPath/data.json').createSync(recursive: true);
   }
-  final String rawData = File('$_dirPath/data.json').readAsStringSync();
+  final String rawData = File('$dirPath/data.json').readAsStringSync();
   if (rawData.isNotEmpty) {
-    Map<String, dynamic> raw = jsonDecode(rawData);
-    for (String date in raw.keys) {
-      List<dynamic> pills = raw[date];
-      data[date] = List<Pill>.generate(pills.length, (index) {
-        return Pill(
-            span: int.parse(pills[index]['span']),
-            time: TimeOfDay(hour: pills[index]['time'], minute: 0),
-            description: "Lorem Ipsum",
-            title: pills[index]['title'],
-            dosage: pills[index]['dosage']);
-      });
+    try {
+      Map<String, dynamic> raw = jsonDecode(rawData);
+      for (String date in raw.keys) {
+        List<dynamic> pills = raw[date];
+        data[date] = List<Pill>.generate(pills.length, (index) {
+          return Pill(
+              weight: pills[index]['weight'],
+              span: int.parse(pills[index]['span']),
+              time: TimeOfDay(hour: pills[index]['time'], minute: 0),
+              description: "Lorem Ipsum",
+              title: pills[index]['title'],
+              dosage: pills[index]['dosage']);
+        });
+      }
+    } catch (e) {
+      print(rawData);
     }
   }
 
-  print(data);
   return data;
 }
 
 Future<Map<String, List<Pill>>?> writeData(Pill data) async {
-  final _dirPath = await getDirPath();
-  final File _file = File('$_dirPath/data.json');
+  final dirPath = await getDirPath();
+  final File filepath = File('$dirPath/data.json');
   Map<String, List<Pill>>? pillList =
       (await readPill()).cast<String, List<Pill>>();
   Map file = {};
@@ -58,7 +65,9 @@ Future<Map<String, List<Pill>>?> writeData(Pill data) async {
     } else {
       pillList[key] = [data];
     }
+    await createNotification(data.time, date.day);
   }
+  inspect(pillList);
 
   for (String date in pillList.keys) {
     List<Map> temp = [];
@@ -68,7 +77,6 @@ Future<Map<String, List<Pill>>?> writeData(Pill data) async {
     file[date] = temp;
   }
 
-  print(const JsonEncoder.withIndent("     ").convert(file));
-  await _file.writeAsString(jsonEncode(file));
+  await filepath.writeAsString(jsonEncode(file));
   return pillList;
 }
